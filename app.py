@@ -45,7 +45,7 @@ def convert_fixed():
     Etiquetas y URLs (fijas):
     - Standard: https://gofile.io/d/en4HXu
     - Enhanced: https://gofile.io/d/YbiRbg
-    - Potato:   https://gofile.io/d/Bm11pI
+    - Potato:   https://gofile.io/d/mnaS35
 
     Si se envía JSON POST con {"password": "..."} se usará esa contraseña para los 3 enlaces.
     """
@@ -53,7 +53,7 @@ def convert_fixed():
     fixed = {
         "Standard": "https://gofile.io/d/en4HXu",
         "Enhanced": "https://gofile.io/d/YbiRbg",
-        "Potato": "https://gofile.io/d/Bm11pI",
+        "Potato": "https://gofile.io/d/mnaS35",
     }
 
     # permitir password opcional por POST JSON o por query param
@@ -104,3 +104,4 @@ if __name__ == "__main__":
         logging.getLogger("GoFile").warning(f"prewarm failed: {e}")
 
     app.run(host="0.0.0.0", port=5000, debug=True)
+
