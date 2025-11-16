@@ -104,10 +104,8 @@
   </div>
 
   <script>
-    // Detectar si se ejecuta localmente o en GitHub Pages
-    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:5000/convert_fixed'
-      : 'https://api.ejemplo.com/convert_fixed'; // reemplaza con tu URL de API en producción
+    // API desplegada en Render
+    const apiUrl = 'https://pedsafio.onrender.com/convert_fixed';
 
     async function fetchLinks() {
       const statusDiv = document.getElementById('status');
