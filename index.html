@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GoFile Links Converter</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 { color: #333; margin-top: 0; }
+    .status {
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .status.loading {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .links-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .link-card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 16px;
+      background: #fafafa;
+      transition: all 0.3s ease;
+    }
+    .link-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+    .link-card h3 {
+      margin: 0 0 8px 0;
+      color: #333;
+      font-size: 16px;
+    }
+    .link-card .link {
+      word-break: break-all;
+      font-size: 12px;
+      font-family: monospace;
+      background: white;
+      padding: 8px;
+      border-radius: 4px;
+      color: #0066cc;
+      text-decoration: none;
+      display: inline-block;
+      max-width: 100%;
+    }
+    .link-card .link:hover {
+      text-decoration: underline;
+    }
+    .link-card .error {
+      color: #c62828;
+      font-size: 12px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔗 GoFile Links Converter</h1>
+    <div id="status" class="status loading">
+      <span class="spinner"></span> Obteniendo enlaces convertidos...
+    </div>
+    <div id="links" class="links-grid"></div>
+  </div>
+
+  <script>
+    // Detectar si se ejecuta localmente o en GitHub Pages
+    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000/convert_fixed'
+      : 'https://api.ejemplo.com/convert_fixed'; // reemplaza con tu URL de API en producción
+
+    async function fetchLinks() {
+      const statusDiv = document.getElementById('status');
+      const linksDiv = document.getElementById('links');
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+
+        if (data.status !== 'ok') {
+          throw new Error(`API error: ${data.message || 'desconocido'}`);
+        }
+
+        // Renderizar resultados (1, 2, 3)
+        const results = data.results || {};
+        linksDiv.innerHTML = '';
+        for (const key of ['1', '2', '3']) {
+          const item = results[key];
+          const card = document.createElement('div');
+          card.className = 'link-card';
+
+          const title = document.createElement('h3');
+          title.textContent = item?.label || `Link ${key}`;
+          card.appendChild(title);
+
+          if (item?.error) {
+            const errDiv = document.createElement('div');
+            errDiv.className = 'error';
+            errDiv.textContent = `Error: ${item.error}`;
+            card.appendChild(errDiv);
+          } else if (item?.direct) {
+            const link = document.createElement('a');
+            link.className = 'link';
+            link.href = item.direct;
+            link.textContent = item.direct;
+            link.target = '_blank';
+            card.appendChild(link);
+          } else {
+            const div = document.createElement('div');
+            div.className = 'error';
+            div.textContent = 'Sin enlace disponible';
+            card.appendChild(div);
+          }
+
+          linksDiv.appendChild(card);
+        }
+
+        statusDiv.className = 'status success';
+        statusDiv.textContent = '✓ Enlaces obtenidos correctamente';
+      } catch (err) {
+        statusDiv.className = 'status error';
+        statusDiv.textContent = `✗ Error: ${err.message}`;
+        linksDiv.innerHTML = '';
+      }
+    }
+
+    // Cargar al abrir la página
+    fetchLinks();
+  </script>
+</body>
+</html>
